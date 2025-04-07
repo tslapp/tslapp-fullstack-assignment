@@ -1,0 +1,10 @@
+{
+  "db": {
+    "url": "postgresql://dummy:dummy@localhost:5432/tslapp-fullstack-assignment"
+  },
+  "openrouter": {
+    "baseUrl": "https://openrouter.ai/api/v1",
+    "apiKey": "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",
+    "model": "qwen/qwq-32b:free"
+  }
+}

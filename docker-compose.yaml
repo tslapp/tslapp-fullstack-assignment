@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:15.5-alpine3.17
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "dummy"
+      POSTGRES_PASSWORD: "dummy"
+      POSTGRES_DB: "tslapp-fullstack-assignment"
+      TZ: "UTC"
+      PGTZ: "UTC"
