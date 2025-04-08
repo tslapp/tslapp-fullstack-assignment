@@ -1,8 +1,7 @@
 import OpenAI from 'openai';
 import { config } from './config';
-import { Role } from './types';
 
-export async function* completion(messages: { role: Role; content: string }[]): AsyncIterable<string> {
+export async function* completion(messages: { role: 'user' | 'assistant'; content: string }[]): AsyncIterable<string> {
   const openai = new OpenAI({
     baseURL: config.openrouter.baseUrl,
     apiKey: config.openrouter.apiKey,
