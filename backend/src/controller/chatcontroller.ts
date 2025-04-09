@@ -5,6 +5,7 @@ import { Chat } from '../entity/chat';
 import { getRepository } from '../component/db';
 import { Message } from '../entity/message';
 import { ChatResponse, CompletionRequest, MessageResponse } from '../component/types';
+import { completion as openAICompletion } from '../component/openai';
 
 function getMessageResponse(message: Message): MessageResponse {
   return {
@@ -56,9 +57,25 @@ export class ChatController {
   @Post('/v1/chats/:chatId/completion')
   @OnUndefined(StatusCodes.OK)
   public async completion(@Param('chatId') chatId: string, @Body() request: CompletionRequest, @Res() res: Response): Promise<void> {
-    // Implement this method
-    // 1. Call `completion` method in ../component/openai.ts
-    // 2. Respond by SSE stream
-    // 3. Support chat context
+    const chat = await this.chatRepository.findOneOrFail({
+      relations: ['messages'],
+      where: { id: chatId },
+    });
+
+    const messages = [
+      ...chat.messages?.map((m:Message) => ({ role: m.role, content: m.content })) || [],
+      { role: 'user', content: request.userMessage }
+    ];
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const stream = openAICompletion(messages);
+    for await (const chunk of stream) {
+      res.write(`data: ${chunk}\n\n`);
+    }
+
+    res.end();
   }
 }
